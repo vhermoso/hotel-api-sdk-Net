@@ -1,0 +1,11 @@
+C:\Users\pmayo\OneDrive\hotel-api-sdk\hotel-api-model\bin\Debug\com.hotelbeds.distribution.hotel_api_model.dll
+C:\Users\pmayo\OneDrive\hotel-api-sdk\hotel-api-model\bin\Debug\com.hotelbeds.distribution.hotel_api_model.pdb
+C:\Users\pmayo\OneDrive\hotel-api-sdk\hotel-api-model\obj\Debug\com.hotelbeds.distribution.hotel_api_model.dll
+C:\Users\pmayo\OneDrive\hotel-api-sdk\hotel-api-model\obj\Debug\com.hotelbeds.distribution.hotel_api_model.pdb
+D:\Projects\Multinucleo\OneDrive\hotel-api-sdk\hotel-api-model\bin\Debug\com.hotelbeds.distribution.hotel_api_model.dll
+D:\Projects\Multinucleo\OneDrive\hotel-api-sdk\hotel-api-model\bin\Debug\com.hotelbeds.distribution.hotel_api_model.pdb
+D:\Projects\Multinucleo\OneDrive\hotel-api-sdk\hotel-api-model\bin\Debug\Newtonsoft.Json.dll
+D:\Projects\Multinucleo\OneDrive\hotel-api-sdk\hotel-api-model\bin\Debug\Newtonsoft.Json.xml
+D:\Projects\Multinucleo\OneDrive\hotel-api-sdk\hotel-api-model\obj\Debug\hotel-api-model.csprojResolveAssemblyReference.cache
+D:\Projects\Multinucleo\OneDrive\hotel-api-sdk\hotel-api-model\obj\Debug\com.hotelbeds.distribution.hotel_api_model.dll
+D:\Projects\Multinucleo\OneDrive\hotel-api-sdk\hotel-api-model\obj\Debug\com.hotelbeds.distribution.hotel_api_model.pdb
