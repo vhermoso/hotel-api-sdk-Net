@@ -100,7 +100,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk.helpers
             {
                 AvailabilityRQ availabilityRQ = new AvailabilityRQ();
                 availabilityRQ.language = this.language;
-                availabilityRQ.stay = new hotel_api_model.auto.model.Stay(checkIn, checkOut, 1, true);
+                availabilityRQ.stay = new Stay(checkIn, checkOut, shiftDays, true);
 
                 if (rooms != null && rooms.Count > 0)
                 {

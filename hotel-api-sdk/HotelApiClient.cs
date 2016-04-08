@@ -260,6 +260,21 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                         return response;
                     }
 
+                    // DELETE Method
+                    if (path.getHttpMethod() == HttpMethod.Delete)
+                    {
+                        string Uri = path.getEndPoint();
+
+                        if (param != null)
+                        {
+                            Uri = path.getEndPoint(param);
+                        }
+
+                        HttpResponseMessage resp = client.DeleteAsync(Uri).Result;
+                        response = resp.Content.ReadAsAsync<T>().Result;
+                        return response;
+                    }
+
                     StringContent contentToSend = null;
                     if (request != null)
                     { 

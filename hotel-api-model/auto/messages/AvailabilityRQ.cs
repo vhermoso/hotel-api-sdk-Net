@@ -42,8 +42,6 @@ namespace com.hotelbeds.distribution.hotel_api_model.auto.messages
                     throw new ArgumentException("Rooms must be 1 or greater");
                 if ( !occupancies[i].adults.HasValue || occupancies[i].adults.Value < 1)
                     throw new ArgumentException("Adults must be 1 or greater");
-                if (occupancies[i].children.HasValue && occupancies[i].children.Value >= 1)
-                    throw new ArgumentException("Children must be 1 or greater");
 
                 if (occupancies[i].children.HasValue)
                 {

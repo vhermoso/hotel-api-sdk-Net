@@ -15,7 +15,6 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
         {
             try
             {
-
                 HotelApiClient client = new HotelApiClient();
                 StatusRS status = client.status();
 
@@ -41,6 +40,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
                 avail.destination = "PMI";
                 avail.zone = 90;
                 avail.language = "CAS";
+                avail.shiftDays = 2;
                 AvailRoom room = new AvailRoom();
                 room.adults = 2;
                 room.children = 0;
@@ -109,6 +109,9 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
                 if (availabilityRQ == null)
                     throw new Exception("Availability RQ can't be null", new ArgumentNullException());
 
+                //Console.WriteLine("Availability Request:");
+                //Console.WriteLine(JsonConvert.SerializeObject(availabilityRQ, Formatting.Indented, new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Ignore }));
+
                 AvailabilityRS responseAvail = client.doAvailability(availabilityRQ);
 
                 if (responseAvail != null && responseAvail.hotels != null && responseAvail.hotels.hotels != null && responseAvail.hotels.hotels.Count > 0)
@@ -153,6 +156,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
                         CheckRateRS responseRate = client.doCheck(checkRateRQ);
                         if (responseRate != null && responseRate.error == null)
                         {
+                            Console.WriteLine("CheckRate Response:");
                             Console.WriteLine(JsonConvert.SerializeObject(responseRate, Formatting.Indented, new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Ignore }));
 
                             com.hotelbeds.distribution.hotel_api_sdk.helpers.Booking booking = new com.hotelbeds.distribution.hotel_api_sdk.helpers.Booking();
@@ -174,6 +178,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
                             if (bookingRQ != null)
                             {
                                 BookingRS responseBooking = client.confirm(bookingRQ);
+                                Console.WriteLine("Booking Response:");
                                 if (responseBooking != null)
                                     Console.WriteLine(JsonConvert.SerializeObject(responseBooking, Formatting.Indented, new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Ignore }));
                                 else
@@ -184,12 +189,11 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
                                     Console.WriteLine("Confirmation succedded. Canceling reservation with id " + responseBooking.booking.reference);
                                     param = new List<Tuple<string, string>>
                                     {
-                                        //new Tuple<string, string>("${bookingId}", responseBooking.booking.reference),
-                                        new Tuple<string, string>("${bookingId}", "1-3087550"),
+                                        new Tuple<string, string>("${bookingId}", responseBooking.booking.reference),
+                                        //new Tuple<string, string>("${bookingId}", "1-3087550"),
                                         new Tuple<string, string>("${flag}", "C")
                                     };
 
-                                    Console.WriteLine("Getting detail after cancelation of id " + responseBooking.booking.reference);
 
                                     BookingCancellationRS bookingCancellationRS = client.Cancel(param);
 
@@ -197,6 +201,9 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
                                     {
                                         Console.WriteLine("Id cancelled: " + responseBooking.booking.reference);
                                         Console.WriteLine(JsonConvert.SerializeObject(bookingCancellationRS, Formatting.Indented, new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Ignore }));
+                                        Console.ReadLine();
+
+                                        Console.WriteLine("Getting detail after cancelation of id " + responseBooking.booking.reference);
                                         param = new List<Tuple<string, string>>
                                         {
                                             new Tuple<string, string>("${bookingId}", responseBooking.booking.reference)
@@ -249,6 +256,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
             {
                 Console.WriteLine("Error: " + e.Message + " " + e.StackTrace);
             }
+            Console.ReadLine();
         }
     }
 }
