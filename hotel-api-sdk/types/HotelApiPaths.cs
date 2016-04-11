@@ -94,7 +94,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk.types
         {
             public BOOKING_CANCEL()
             {
-                httpMethod = new HttpMethod("GET");
+                httpMethod = new HttpMethod("DELETE");
                 endpoint = "bookings/${bookingId}?cancellationFlag=${flag}";
             }
         }
