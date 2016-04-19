@@ -201,7 +201,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
                                     {
                                         new Tuple<string, string>("${bookingId}", responseBooking.booking.reference),
                                         //new Tuple<string, string>("${bookingId}", "1-3087550"),
-                                        new Tuple<string, string>("${flag}", "C")
+                                        new Tuple<string, string>("${flag}", "CANCELLATION")
                                     };
 
 
