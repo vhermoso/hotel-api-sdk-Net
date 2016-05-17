@@ -5,8 +5,6 @@ namespace com.hotelbeds.distribution.hotel_api_model.auto.model
 {
     public class Hotel
     {        
-        public DateTime checkIn { get; set; }
-        public DateTime checkOut { get; set; }
         public int code { get; set; }
         public string name { get; set; }
         public string categoryCode { get; set; }
