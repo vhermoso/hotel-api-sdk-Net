@@ -60,18 +60,17 @@ else if (status == null)
 Availability avail = new Availability();
 avail.checkIn = DateTime.Now.AddDays(10);
 avail.checkOut = DateTime.Now.AddDays(13);
-avail.destination = "PMI";
-avail.zone = 90;
-avail.language = "CAS";
+avail.withinThis = new Availability.Circle() {
+	latitude = 13.752474,
+	longitude = 100.4657878,
+	radiusInKilometers = 50
+	};
 AvailRoom room = new AvailRoom();
-room.adults = 2;
-room.children = 0;
+room.adults = 1;
 room.details = new List<RoomDetail>();
 room.adultOf(30);
-room.adultOf(30);
-//room.childOf(4);                
+room.numberOfRooms = 1;
 avail.rooms.Add(room);
-avail.payed = Availability.Pay.AT_HOTEL;
 
 AvailabilityRQ availabilityRQ = avail.toAvailabilityRQ();
 if (availabilityRQ == null)
