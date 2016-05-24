@@ -26,8 +26,6 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
         /// <summary>
         /// Atributos
         /// </summary>
-        public int readTimeout { get; set; } = REST_TEMPLATE_READ_TIME_OUT;
-        
         private readonly string basePath;
         private readonly HotelApiVersion version;        
         private readonly string apiKey;
@@ -233,7 +231,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
                     client.BaseAddress = new Uri(path.getUrl(this.basePath, this.version));
                     client.DefaultRequestHeaders.Clear();
-                    client.Timeout = new TimeSpan(0, 0, this.readTimeout);
+                    client.Timeout = new TimeSpan(0, 0, REST_TEMPLATE_READ_TIME_OUT);
                     client.DefaultRequestHeaders.Add("Api-Key", this.apiKey);
                     client.DefaultRequestHeaders.Add("Accept-Enconding", "Gzip");
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
