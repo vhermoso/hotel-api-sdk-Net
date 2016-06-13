@@ -233,7 +233,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                     client.DefaultRequestHeaders.Clear();
                     client.Timeout = new TimeSpan(0, 0, REST_TEMPLATE_READ_TIME_OUT);
                     client.DefaultRequestHeaders.Add("Api-Key", this.apiKey);
-                    client.DefaultRequestHeaders.Add("Accept-Enconding", "Gzip");
+                    client.DefaultRequestHeaders.Add("Accept-Encoding", "Gzip");
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
 
