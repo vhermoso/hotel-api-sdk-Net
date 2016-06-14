@@ -8,6 +8,8 @@ using System.Security.Cryptography;
 using Newtonsoft.Json;
 using System.Configuration;
 using System.Collections.Generic;
+using System.IO.Compression;
+using System.IO;
 
 namespace com.hotelbeds.distribution.hotel_api_sdk
 {
@@ -17,7 +19,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
     public class HotelApiClient
     {
         //https://developer.hotelbeds.com/docs/read/apitude_booking/
-        
+
         /// <summary>
         /// CONSTANTS 
         /// </summary>
@@ -27,7 +29,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
         /// Atributos
         /// </summary>
         private readonly string basePath;
-        private readonly HotelApiVersion version;        
+        private readonly HotelApiVersion version;
         private readonly string apiKey;
         private readonly string sharedSecret;
         private string environtment;
@@ -39,7 +41,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             this.version = new HotelApiVersion(HotelApiVersion.versions.V1);
             this.basePath = GetEnvironment();
             CheckHotelApiClientConfig();
-        }        
+        }
 
         public HotelApiClient(HotelApiVersion version)
         {
@@ -79,7 +81,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             try
             {
                 string returnValue = ConfigurationManager.AppSettings.Get("ApiKey");
-                
+
                 return returnValue;
             }
             catch (Exception e)
@@ -93,7 +95,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             try
             {
                 string returnValue = ConfigurationManager.AppSettings.Get("SharedSecret");
-                
+
                 return returnValue;
             }
             catch (Exception e)
@@ -114,13 +116,13 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                 }
                 return returnValue;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
         }
 
-        
+
         public StatusRS status()
         {
             HotelApiPaths.STATUS avail = new HotelApiPaths.STATUS();
@@ -141,12 +143,12 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                 AvailabilityRS response = callRemoteApi<AvailabilityRS, AvailabilityRQ>(request, avail, null);
                 return response;
             }
-            catch(HotelSDKException e)
+            catch (HotelSDKException e)
             {
                 throw e;
             }
         }
-        
+
         public CheckRateRS doCheck(CheckRateRQ checkRateRQ)
         {
             try
@@ -155,7 +157,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                 CheckRateRS response = callRemoteApi<CheckRateRS, CheckRateRQ>(checkRateRQ, checkRate, null);
                 return response;
             }
-            catch(HotelSDKException e)
+            catch (HotelSDKException e)
             {
                 throw e;
             }
@@ -223,9 +225,15 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             {
                 T response = default(T);
 
-                using (var client = new HttpClient())
+                using (var client = new HttpClient(
+                                        new HttpClientHandler()
+                                        {
+                                            AutomaticDecompression =
+                                                System.Net.DecompressionMethods.GZip |
+                                                System.Net.DecompressionMethods.Deflate
+                                        }))
                 {
-                    if (request == null && (path.GetType() != typeof(HotelApiPaths.STATUS) 
+                    if (request == null && (path.GetType() != typeof(HotelApiPaths.STATUS)
                         && path.GetType() != typeof(HotelApiPaths.BOOKING_CANCEL) && path.GetType() != typeof(HotelApiPaths.BOOKING_DETAIL) && path.GetType() != typeof(HotelApiPaths.BOOKING_LIST)))
                         throw new Exception("Object request can't be null");
 
@@ -233,9 +241,6 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                     client.DefaultRequestHeaders.Clear();
                     client.Timeout = new TimeSpan(0, 0, REST_TEMPLATE_READ_TIME_OUT);
                     client.DefaultRequestHeaders.Add("Api-Key", this.apiKey);
-                    client.DefaultRequestHeaders.Add("Accept-Encoding", "Gzip");
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
 
                     long ts = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds / 1000;
                     SHA256 hashstring = SHA256Managed.Create();
@@ -253,7 +258,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                             Uri = path.getEndPoint(param);
                         }
 
-                        HttpResponseMessage resp = client.GetAsync(Uri).Result;                        
+                        HttpResponseMessage resp = client.GetAsync(Uri).Result;
                         response = resp.Content.ReadAsAsync<T>().Result;
                         return response;
                     }
@@ -275,7 +280,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
                     StringContent contentToSend = null;
                     if (request != null)
-                    { 
+                    {
                         string objectSerialized = JsonConvert.SerializeObject(request, Formatting.Indented, new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Ignore });
                         contentToSend = new StringContent(objectSerialized, Encoding.UTF8, "application/json");
                     }
@@ -283,7 +288,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                     if (path.getHttpMethod() == HttpMethod.Post)
                     {
                         HttpResponseMessage resp = null;
-                        if ( param == null )
+                        if (param == null)
                             resp = client.PostAsync(path.getEndPoint(), contentToSend).Result;
                         else
                             resp = client.PostAsync(path.getEndPoint(param), contentToSend).Result;
