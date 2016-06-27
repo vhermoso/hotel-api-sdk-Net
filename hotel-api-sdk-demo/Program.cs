@@ -17,7 +17,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
             {
                 HotelApiClient client = new HotelApiClient();
                 StatusRS status = client.status();
-
+                
                 if (status != null && status.error == null)
                     Console.WriteLine("StatusRS: " + status.status);
                 else if (status != null && status.error != null)
@@ -32,7 +32,6 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
                 }
 
                 List<Tuple<string, string>> param;
-
 
                 Availability avail = new Availability();
                 avail.checkIn = DateTime.Now.AddDays(10);
@@ -265,7 +264,9 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
             catch (Exception e)
             {
                 Console.WriteLine("Error: " + e.Message + " " + e.StackTrace);
+                Console.WriteLine("InnerException: " + e.InnerException);
             }
+
             Console.ReadLine();
         }
     }
