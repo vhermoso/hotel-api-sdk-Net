@@ -228,9 +228,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                 using (var client = new HttpClient(
                                         new HttpClientHandler()
                                         {
-                                            AutomaticDecompression =
-                                                System.Net.DecompressionMethods.GZip |
-                                                System.Net.DecompressionMethods.Deflate
+                                            AutomaticDecompression = System.Net.DecompressionMethods.GZip
                                         }))
                 {
                     if (request == null && (path.GetType() != typeof(HotelApiPaths.STATUS)
@@ -247,6 +245,8 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                     byte[] hash = hashstring.ComputeHash(Encoding.UTF8.GetBytes(this.apiKey + this.sharedSecret + ts));
                     string signature = BitConverter.ToString(hash).Replace("-", "");
                     client.DefaultRequestHeaders.Add("X-Signature", signature.ToString());
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
 
                     // GET Method
                     if (path.getHttpMethod() == HttpMethod.Get)
