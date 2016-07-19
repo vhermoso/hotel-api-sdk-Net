@@ -9,8 +9,6 @@ namespace com.hotelbeds.distribution.hotel_api_model.auto.model
         public string cancellationReference { get; set; }
         public string clientReference { get; set; } 
 	    public DateTime creationDate { get; set; }
-        //[JsonProperty("paymentType", Required = Required.Always)]
-        //[JsonConverter(typeof(SimpleTypes.PaymentTypeConverter))]
         public SimpleTypes.BookingStatus status { get; set; }    
 	    public decimal agCommision { get; set; }    
 	    public decimal commisionVAT { get; set; }
