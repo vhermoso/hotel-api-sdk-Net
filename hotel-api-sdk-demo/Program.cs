@@ -39,25 +39,25 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
                 avail.destination = "PMI";
                 avail.zone = 90;
                 avail.language = "CAS";
-                avail.shiftDays = 2;
+                //avail.shiftDays = 2;
                 AvailRoom room = new AvailRoom();
                 room.adults = 2;
                 room.children = 0;
                 room.details = new List<RoomDetail>();
                 room.adultOf(30);
                 room.adultOf(30);
-                room.numberOfRooms = 2;
+                room.numberOfRooms = 1;
                 //room.childOf(4);                
                 avail.rooms.Add(room);
-                room = new AvailRoom();
-                room.adults = 2;
-                room.children = 0;
-                room.details = new List<RoomDetail>();
-                room.adultOf(30);
-                room.adultOf(30);
-                room.numberOfRooms = 1;
-                avail.rooms.Add(room);
-                avail.payed = Availability.Pay.AT_HOTEL;
+                //room = new AvailRoom();
+                //room.adults = 2;
+                //room.children = 0;
+                //room.details = new List<RoomDetail>();
+                //room.adultOf(30);
+                //room.adultOf(30);
+                //room.numberOfRooms = 1;
+                //avail.rooms.Add(room);
+                //avail.payed = Availability.Pay.AT_HOTEL;
                 //avail.ofTypes = new HashSet<hotel_api_model.auto.common.SimpleTypes.AccommodationType>();
                 //avail.ofTypes.Add(hotel_api_model.auto.common.SimpleTypes.AccommodationType.HOTEL);
                 //avail.ofTypes.Add(hotel_api_model.auto.common.SimpleTypes.AccommodationType.APARTMENT);
@@ -184,6 +184,8 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
 
                             booking.addRoom(rateKey, confirmRoom);
                             BookingRQ bookingRQ = booking.toBookingRQ();
+                            //bookingRQ.language = "CAS";
+
                             if (bookingRQ != null)
                             {
                                 BookingRS responseBooking = client.confirm(bookingRQ);
@@ -199,7 +201,6 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
                                     param = new List<Tuple<string, string>>
                                     {
                                         new Tuple<string, string>("${bookingId}", responseBooking.booking.reference),
-                                        //new Tuple<string, string>("${bookingId}", "1-3087550"),
                                         new Tuple<string, string>("${flag}", "CANCELLATION")
                                     };
 
