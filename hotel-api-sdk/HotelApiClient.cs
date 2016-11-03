@@ -21,13 +21,9 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
         //https://developer.hotelbeds.com/docs/read/apitude_booking/
 
         /// <summary>
-        /// CONSTANTS 
-        /// </summary>
-        private const int REST_TEMPLATE_READ_TIME_OUT = 5000;
-
-        /// <summary>
         /// Atributos
         /// </summary>
+        private readonly TimeSpan timeout;
         private readonly string basePath;
         private readonly HotelApiVersion version;
         private readonly string apiKey;
@@ -36,6 +32,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
         public HotelApiClient()
         {
+            this.timeout = GetTimeoutFromConfig();
             this.apiKey = GetHotelApiKeyFromConfig();
             this.sharedSecret = GetHotelSharedSecretFromConfig();
             this.version = new HotelApiVersion(HotelApiVersion.versions.V1);
@@ -45,6 +42,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
         public HotelApiClient(HotelApiVersion version)
         {
+            this.timeout = GetTimeoutFromConfig();
             this.apiKey = GetHotelApiKeyFromConfig();
             this.sharedSecret = GetHotelSharedSecretFromConfig();
             this.version = version;
@@ -54,6 +52,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
         public HotelApiClient(string apiKey, string sharedSecret)
         {
+            this.timeout = GetTimeoutFromConfig();
             this.apiKey = apiKey;
             this.sharedSecret = sharedSecret;
             this.version = new HotelApiVersion(HotelApiVersion.versions.V1);
@@ -63,6 +62,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
         public HotelApiClient(HotelApiVersion version, string apiKey, string sharedSecret)
         {
+            this.timeout = GetTimeoutFromConfig();
             this.apiKey = apiKey;
             this.sharedSecret = sharedSecret;
             this.version = version;
@@ -87,6 +87,20 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             catch (Exception e)
             {
                 throw e;
+            }
+        }
+
+        private TimeSpan GetTimeoutFromConfig()
+        {
+            try
+            {
+                int returnValue = int.Parse(ConfigurationManager.AppSettings.Get("TimeoutSeconds"));
+                return TimeSpan.FromSeconds(returnValue);
+            }
+            catch
+            {
+                // In case the client updated the version and did not configure the new parameter
+                return TimeSpan.FromSeconds(5000);
             }
         }
 
@@ -237,7 +251,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
                     client.BaseAddress = new Uri(path.getUrl(this.basePath, this.version));
                     client.DefaultRequestHeaders.Clear();
-                    client.Timeout = new TimeSpan(0, 0, REST_TEMPLATE_READ_TIME_OUT);
+                    client.Timeout = this.timeout;
                     client.DefaultRequestHeaders.Add("Api-Key", this.apiKey);
 
                     long ts = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds / 1000;
