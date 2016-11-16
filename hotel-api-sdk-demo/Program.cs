@@ -6,7 +6,6 @@ using com.hotelbeds.distribution.hotel_api_model.auto.messages;
 using com.hotelbeds.distribution.hotel_api_sdk.helpers;
 using com.hotelbeds.distribution.hotel_api_model.auto.model;
 using Newtonsoft.Json;
-using hotel_api_sdk_demo;
 
 namespace com.hotelbeds.distribution.hotel_api_sdk_demo
 {
@@ -16,8 +15,6 @@ namespace com.hotelbeds.distribution.hotel_api_sdk_demo
         {
             try
             {
-                Tests.ejecutar();
-
                 HotelApiClient client = new HotelApiClient();
                 StatusRS status = client.status();
                 
