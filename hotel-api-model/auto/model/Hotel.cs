@@ -31,5 +31,6 @@ namespace com.hotelbeds.distribution.hotel_api_model.auto.model
         public Supplier supplier { get; set; }
         public string clientComments { get; set; }
         public Upselling upselling { get; set; }
+        public decimal cancellationAmount { get; set; }
     }
 }
