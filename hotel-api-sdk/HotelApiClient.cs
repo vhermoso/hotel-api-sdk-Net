@@ -259,8 +259,8 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                     byte[] hash = hashstring.ComputeHash(Encoding.UTF8.GetBytes(this.apiKey + this.sharedSecret + ts));
                     string signature = BitConverter.ToString(hash).Replace("-", "");
                     client.DefaultRequestHeaders.Add("X-Signature", signature.ToString());
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json; charset=utf-8");
 
                     // GET Method
                     if (path.getHttpMethod() == HttpMethod.Get)
