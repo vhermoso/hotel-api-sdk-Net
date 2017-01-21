@@ -58,8 +58,8 @@ namespace com.hotelbeds.distribution.hotel_api_model.auto.messages
 
             if ( destination != null )
             {
-                if (String.IsNullOrEmpty(destination.code) || !destination.zone.HasValue)
-                    throw new ArgumentException("If destination object is informed then code and zone must be informed too.");
+                if (String.IsNullOrEmpty(destination.code))
+                    throw new ArgumentException("If destination object is informed then code must be sent.");
             }
 
             if( geolocation != null )
