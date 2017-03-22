@@ -4,7 +4,7 @@
 Hotelbeds SDK for NET is a set of utilities whose main goal is to help in the development of NET applications that use APItude, the Hotelbeds API.
 This is a nuget package available on nuget.org repository. 
 
-https://www.nuget.org/packages/hotel-api-sdk-net/0.1.0
+https://www.nuget.org/packages/hotel-api-sdk-net/0.6.8
 
 ## License
 This softwared is licensed under the LGPL v2.1 license. Please refer to the file LICENSE for specific details and more license and copyright information.
