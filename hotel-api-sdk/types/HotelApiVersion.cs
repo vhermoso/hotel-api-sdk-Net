@@ -2,7 +2,7 @@
 {
     public class HotelApiVersion
     {
-        public enum versions { V0_2, V1 };
+        public enum versions { V0_2, V1, V1_1 };
 
         public versions version { get; }
 

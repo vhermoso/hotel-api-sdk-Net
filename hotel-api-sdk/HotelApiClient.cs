@@ -26,6 +26,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
         private readonly TimeSpan timeout;
         private readonly string basePath;
         private readonly HotelApiVersion version;
+        private readonly HotelApiVersion paymentVersion;
         private readonly string apiKey;
         private readonly string sharedSecret;
         private string environment;
@@ -36,6 +37,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             this.apiKey = GetHotelApiKeyFromConfig();
             this.sharedSecret = GetHotelSharedSecretFromConfig();
             this.version = new HotelApiVersion(HotelApiVersion.versions.V1);
+            this.paymentVersion = new HotelApiVersion(HotelApiVersion.versions.V1_1);
             this.basePath = GetEnvironment();
             CheckHotelApiClientConfig();
         }
@@ -46,6 +48,18 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             this.apiKey = GetHotelApiKeyFromConfig();
             this.sharedSecret = GetHotelSharedSecretFromConfig();
             this.version = version;
+            this.paymentVersion = new HotelApiVersion(HotelApiVersion.versions.V1_1);
+            this.basePath = GetEnvironment();
+            CheckHotelApiClientConfig();
+        }
+
+        public HotelApiClient(HotelApiVersion version, HotelApiVersion paymentVersion)
+        {
+            this.timeout = GetTimeoutFromConfig();
+            this.apiKey = GetHotelApiKeyFromConfig();
+            this.sharedSecret = GetHotelSharedSecretFromConfig();
+            this.version = version;
+            this.paymentVersion = paymentVersion;
             this.basePath = GetEnvironment();
             CheckHotelApiClientConfig();
         }
@@ -56,6 +70,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             this.apiKey = apiKey;
             this.sharedSecret = sharedSecret;
             this.version = new HotelApiVersion(HotelApiVersion.versions.V1);
+            this.paymentVersion = new HotelApiVersion(HotelApiVersion.versions.V1_1);
             this.basePath = GetEnvironment();
             CheckHotelApiClientConfig();
         }
@@ -66,6 +81,17 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             this.apiKey = apiKey;
             this.sharedSecret = sharedSecret;
             this.version = version;
+            this.basePath = GetEnvironment();
+            CheckHotelApiClientConfig();
+        }
+
+        public HotelApiClient(HotelApiVersion version, HotelApiVersion paymentVersion, string apiKey, string sharedSecret)
+        {
+            this.timeout = GetTimeoutFromConfig();
+            this.apiKey = apiKey;
+            this.sharedSecret = sharedSecret;
+            this.version = version;
+            this.paymentVersion = paymentVersion;
             this.basePath = GetEnvironment();
             CheckHotelApiClientConfig();
         }
@@ -140,7 +166,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
         public StatusRS status()
         {
             HotelApiPaths.STATUS avail = new HotelApiPaths.STATUS();
-            StatusRS status = callRemoteApi<StatusRS, Object>(null, avail, null);
+            StatusRS status = callRemoteApi<StatusRS, Object>(null, avail, null, this.version);
             return status;
         }
 
@@ -154,7 +180,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             try
             {
                 HotelApiPaths.AVAILABILITY avail = new HotelApiPaths.AVAILABILITY();
-                AvailabilityRS response = callRemoteApi<AvailabilityRS, AvailabilityRQ>(request, avail, null);
+                AvailabilityRS response = callRemoteApi<AvailabilityRS, AvailabilityRQ>(request, avail, null, this.version);
                 return response;
             }
             catch (HotelSDKException e)
@@ -168,7 +194,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             try
             {
                 HotelApiPaths.CHECK_AVAIL checkRate = new HotelApiPaths.CHECK_AVAIL();
-                CheckRateRS response = callRemoteApi<CheckRateRS, CheckRateRQ>(checkRateRQ, checkRate, null);
+                CheckRateRS response = callRemoteApi<CheckRateRS, CheckRateRQ>(checkRateRQ, checkRate, null, this.version);
                 return response;
             }
             catch (HotelSDKException e)
@@ -182,7 +208,12 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             try
             {
                 HotelApiPaths.BOOKING_CONFIRM bookingConfirm = new HotelApiPaths.BOOKING_CONFIRM();
-                BookingRS response = callRemoteApi<BookingRS, BookingRQ>(bookingRQ, bookingConfirm, null);
+                HotelApiVersion version = this.version;
+                if(bookingRQ!=null&& bookingRQ.paymentData!=null)
+                {
+                    version = paymentVersion;
+                }
+                BookingRS response = callRemoteApi<BookingRS, BookingRQ>(bookingRQ, bookingConfirm, null, version);
                 return response;
             }
             catch (HotelSDKException e)
@@ -196,7 +227,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             try
             {
                 HotelApiPaths.BOOKING_CANCEL bookingCancel = new HotelApiPaths.BOOKING_CANCEL();
-                BookingCancellationRS response = callRemoteApi<BookingCancellationRS, Tuple<string, string>[]>(null, bookingCancel, param);
+                BookingCancellationRS response = callRemoteApi<BookingCancellationRS, Tuple<string, string>[]>(null, bookingCancel, param, this.version);
                 return response;
             }
             catch (HotelSDKException e)
@@ -210,7 +241,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             try
             {
                 HotelApiPaths.BOOKING_DETAIL bookingDetail = new HotelApiPaths.BOOKING_DETAIL();
-                BookingDetailRS response = callRemoteApi<BookingDetailRS, Tuple<string, string>[]>(null, bookingDetail, param);
+                BookingDetailRS response = callRemoteApi<BookingDetailRS, Tuple<string, string>[]>(null, bookingDetail, param, this.version);
                 return response;
             }
             catch (HotelSDKException e)
@@ -224,7 +255,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             try
             {
                 HotelApiPaths.BOOKING_LIST bookingList = new HotelApiPaths.BOOKING_LIST();
-                BookingListRS response = callRemoteApi<BookingListRS, Tuple<string, string>[]>(null, bookingList, param);
+                BookingListRS response = callRemoteApi<BookingListRS, Tuple<string, string>[]>(null, bookingList, param, this.version);
                 return response;
             }
             catch (HotelSDKException e)
@@ -233,7 +264,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             }
         }
 
-        private T callRemoteApi<T, U>(U request, HotelApiPaths.HotelApiPathsBase path, List<Tuple<string, string>> param)
+        private T callRemoteApi<T, U>(U request, HotelApiPaths.HotelApiPathsBase path, List<Tuple<string, string>> param, HotelApiVersion version)
         {
             try
             {
@@ -249,7 +280,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                         && path.GetType() != typeof(HotelApiPaths.BOOKING_CANCEL) && path.GetType() != typeof(HotelApiPaths.BOOKING_DETAIL) && path.GetType() != typeof(HotelApiPaths.BOOKING_LIST)))
                         throw new Exception("Object request can't be null");
 
-                    client.BaseAddress = new Uri(path.getUrl(this.basePath, this.version));
+                    client.BaseAddress = new Uri(path.getUrl(this.basePath, version));
                     client.DefaultRequestHeaders.Clear();
                     client.Timeout = this.timeout;
                     client.DefaultRequestHeaders.Add("Api-Key", this.apiKey);

@@ -14,7 +14,20 @@ namespace com.hotelbeds.distribution.hotel_api_sdk.types
 
             public string getUrl(string basePath, HotelApiVersion version)
             {
-                return urlTemplate.Replace("${path}", basePath).Replace("${version}", version.version == HotelApiVersion.versions.V0_2 ? "0.2" : "1.0");
+                string versionString = "1.0";
+                if(version.version == HotelApiVersion.versions.V0_2)
+                {
+                    versionString = "0.2";
+                }
+                else if (version.version == HotelApiVersion.versions.V1)
+                {
+                    versionString = "1.0";
+                }
+                else if (version.version == HotelApiVersion.versions.V1_1)
+                {
+                    versionString = "1.1";
+                }
+                return urlTemplate.Replace("${path}", basePath).Replace("${version}", versionString);
             }            
 
             public HttpMethod getHttpMethod()
