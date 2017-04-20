@@ -2,12 +2,14 @@
 using System.Text;
 
 using com.hotelbeds.distribution.hotel_api_model.auto.messages;
+using com.hotelbeds.distribution.hotel_api_sdk.config;
 using com.hotelbeds.distribution.hotel_api_sdk.types;
 using System.Net.Http;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
 using System.Configuration;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO.Compression;
 using System.IO;
 
@@ -25,80 +27,51 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
         /// </summary>
         private readonly TimeSpan timeout;
         private readonly string basePath;
+        private readonly string baseSecurePath;
         private readonly HotelApiVersion version;
-        private readonly HotelApiVersion paymentVersion;
         private readonly string apiKey;
         private readonly string sharedSecret;
         private string environment;
 
-        public HotelApiClient()
+        public HotelApiClient() : this(new HotelApiVersion(HotelApiVersion.versions.V1))
         {
-            this.timeout = GetTimeoutFromConfig();
+        }
+
+        public HotelApiClient(HotelApiVersion version) : this(version, null, null, false)
+        {
             this.apiKey = GetHotelApiKeyFromConfig();
             this.sharedSecret = GetHotelSharedSecretFromConfig();
-            this.version = new HotelApiVersion(HotelApiVersion.versions.V1);
-            this.paymentVersion = new HotelApiVersion(HotelApiVersion.versions.V1_1);
-            this.basePath = GetEnvironment();
             CheckHotelApiClientConfig();
         }
 
-        public HotelApiClient(HotelApiVersion version)
+        public HotelApiClient(string apiKey, string sharedSecret) : this(new HotelApiVersion(HotelApiVersion.versions.V1), apiKey, sharedSecret)
         {
-            this.timeout = GetTimeoutFromConfig();
-            this.apiKey = GetHotelApiKeyFromConfig();
-            this.sharedSecret = GetHotelSharedSecretFromConfig();
-            this.version = version;
-            this.paymentVersion = new HotelApiVersion(HotelApiVersion.versions.V1_1);
-            this.basePath = GetEnvironment();
-            CheckHotelApiClientConfig();
         }
 
-        public HotelApiClient(HotelApiVersion version, HotelApiVersion paymentVersion)
+        public HotelApiClient(HotelApiVersion version, string apiKey, string sharedSecret) : this(version,apiKey,sharedSecret,true)
         {
-            this.timeout = GetTimeoutFromConfig();
-            this.apiKey = GetHotelApiKeyFromConfig();
-            this.sharedSecret = GetHotelSharedSecretFromConfig();
-            this.version = version;
-            this.paymentVersion = paymentVersion;
-            this.basePath = GetEnvironment();
-            CheckHotelApiClientConfig();
         }
 
-        public HotelApiClient(string apiKey, string sharedSecret)
-        {
-            this.timeout = GetTimeoutFromConfig();
-            this.apiKey = apiKey;
-            this.sharedSecret = sharedSecret;
-            this.version = new HotelApiVersion(HotelApiVersion.versions.V1);
-            this.paymentVersion = new HotelApiVersion(HotelApiVersion.versions.V1_1);
-            this.basePath = GetEnvironment();
-            CheckHotelApiClientConfig();
-        }
-
-        public HotelApiClient(HotelApiVersion version, string apiKey, string sharedSecret)
+        private HotelApiClient(HotelApiVersion version, string apiKey, string sharedSecret, Boolean validate)
         {
             this.timeout = GetTimeoutFromConfig();
             this.apiKey = apiKey;
             this.sharedSecret = sharedSecret;
             this.version = version;
-            this.basePath = GetEnvironment();
-            CheckHotelApiClientConfig();
-        }
-
-        public HotelApiClient(HotelApiVersion version, HotelApiVersion paymentVersion, string apiKey, string sharedSecret)
-        {
-            this.timeout = GetTimeoutFromConfig();
-            this.apiKey = apiKey;
-            this.sharedSecret = sharedSecret;
-            this.version = version;
-            this.paymentVersion = paymentVersion;
-            this.basePath = GetEnvironment();
-            CheckHotelApiClientConfig();
+            config.Environment currentEnvironment = GetEnvironment();
+            if (currentEnvironment != null)
+            {
+                this.basePath = currentEnvironment.BaseUrl;
+                this.baseSecurePath = (currentEnvironment.BaseSecureUrl != null) ? currentEnvironment.BaseSecureUrl : currentEnvironment.BaseUrl;
+            }
+            if (validate) {
+                CheckHotelApiClientConfig();
+            }
         }
 
         private void CheckHotelApiClientConfig()
         {
-            if (String.IsNullOrEmpty(this.apiKey) || version == null || String.IsNullOrEmpty(this.basePath) || String.IsNullOrEmpty(this.sharedSecret))
+            if (String.IsNullOrEmpty(this.apiKey) || version == null || String.IsNullOrEmpty(this.basePath) || String.IsNullOrEmpty(this.baseSecurePath) || String.IsNullOrEmpty(this.sharedSecret))
                 throw new Exception("HotelApiClient cannot be created without specifying an API key, Shared Secret, the Hotel API version and the service you are connecting to.", new ArgumentNullException());
         }
 
@@ -144,15 +117,17 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             }
         }
 
-        private string GetEnvironment()
+        private config.Environment GetEnvironment()
         {
             try
             {
-                string returnValue = string.Empty;
-                environment = ConfigurationManager.AppSettings.Get("ENVIRONMENT");
-                if (!String.IsNullOrEmpty(environment))
+                config.Environment returnValue = null;
+                String environmentName = ConfigurationManager.AppSettings.Get("ENVIRONMENT");
+                if (!String.IsNullOrEmpty(environmentName))
                 {
-                    returnValue = ConfigurationManager.AppSettings.Get(environment);
+                    EnvironmentsSection environmentsSection = (EnvironmentsSection) ConfigurationManager.GetSection("environments");
+                    List<config.Environment> environments = new List<config.Environment>(environmentsSection.Environments);
+                    returnValue = environments.Find(x => x.Name == environmentName);
                 }
                 return returnValue;
             }
@@ -209,11 +184,8 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             {
                 HotelApiPaths.BOOKING_CONFIRM bookingConfirm = new HotelApiPaths.BOOKING_CONFIRM();
                 HotelApiVersion version = this.version;
-                if(bookingRQ!=null&& bookingRQ.paymentData!=null)
-                {
-                    version = paymentVersion;
-                }
-                BookingRS response = callRemoteApi<BookingRS, BookingRQ>(bookingRQ, bookingConfirm, null, version);
+                string baseUrl = (bookingRQ != null && bookingRQ.paymentData != null) ? this.baseSecurePath : this.basePath;
+                BookingRS response = callRemoteApi<BookingRS, BookingRQ>(bookingRQ, bookingConfirm, null, version, baseUrl);
                 return response;
             }
             catch (HotelSDKException e)
@@ -266,6 +238,11 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
         private T callRemoteApi<T, U>(U request, HotelApiPaths.HotelApiPathsBase path, List<Tuple<string, string>> param, HotelApiVersion version)
         {
+            return callRemoteApi<T, U>(request, path, param, version, this.basePath);
+        }
+
+            private T callRemoteApi<T, U>(U request, HotelApiPaths.HotelApiPathsBase path, List<Tuple<string, string>> param, HotelApiVersion version, string baseUrl)
+        {
             try
             {
                 T response = default(T);
@@ -280,7 +257,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                         && path.GetType() != typeof(HotelApiPaths.BOOKING_CANCEL) && path.GetType() != typeof(HotelApiPaths.BOOKING_DETAIL) && path.GetType() != typeof(HotelApiPaths.BOOKING_LIST)))
                         throw new Exception("Object request can't be null");
 
-                    client.BaseAddress = new Uri(path.getUrl(this.basePath, version));
+                    client.BaseAddress = new Uri(path.getUrl(baseUrl, version));
                     client.DefaultRequestHeaders.Clear();
                     client.Timeout = this.timeout;
                     client.DefaultRequestHeaders.Add("Api-Key", this.apiKey);
