@@ -104,6 +104,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="config\Environments.cs" />
     <Compile Include="helpers\Availability.cs" />
     <Compile Include="helpers\AvailRoom.cs" />
     <Compile Include="helpers\Booking.cs" />
