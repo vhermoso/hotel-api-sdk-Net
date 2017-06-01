@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO.Compression;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace com.hotelbeds.distribution.hotel_api_sdk
 {
@@ -48,7 +49,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
         {
         }
 
-        public HotelApiClient(HotelApiVersion version, string apiKey, string sharedSecret) : this(version,apiKey,sharedSecret,true)
+        public HotelApiClient(HotelApiVersion version, string apiKey, string sharedSecret) : this(version, apiKey, sharedSecret, true)
         {
         }
 
@@ -64,7 +65,8 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                 this.basePath = currentEnvironment.BaseUrl;
                 this.baseSecurePath = (currentEnvironment.BaseSecureUrl != null) ? currentEnvironment.BaseSecureUrl : currentEnvironment.BaseUrl;
             }
-            if (validate) {
+            if (validate)
+            {
                 CheckHotelApiClientConfig();
             }
         }
@@ -125,7 +127,7 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                 String environmentName = ConfigurationManager.AppSettings.Get("ENVIRONMENT");
                 if (!String.IsNullOrEmpty(environmentName))
                 {
-                    EnvironmentsSection environmentsSection = (EnvironmentsSection) ConfigurationManager.GetSection("environments");
+                    EnvironmentsSection environmentsSection = (EnvironmentsSection)ConfigurationManager.GetSection("environments");
                     List<config.Environment> environments = new List<config.Environment>(environmentsSection.Environments);
                     returnValue = environments.Find(x => x.Name == environmentName);
                 }
@@ -140,9 +142,12 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
         public StatusRS status()
         {
+            return this.statusAsync().Result;
+        }
+        public Task<StatusRS> statusAsync()
+        {
             HotelApiPaths.STATUS avail = new HotelApiPaths.STATUS();
-            StatusRS status = callRemoteApi<StatusRS, Object>(null, avail, null, this.version);
-            return status;
+            return callRemoteApiAsync<StatusRS, Object>(null, avail, null, this.version);            
         }
 
         /// <summary>
@@ -152,11 +157,16 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
         /// <returns></returns>
         public AvailabilityRS doAvailability(AvailabilityRQ request)
         {
+            return doAvailabilityAsync(request).Result;
+        }
+
+        public Task<AvailabilityRS> doAvailabilityAsync(AvailabilityRQ request)
+        {
             try
             {
                 HotelApiPaths.AVAILABILITY avail = new HotelApiPaths.AVAILABILITY();
-                AvailabilityRS response = callRemoteApi<AvailabilityRS, AvailabilityRQ>(request, avail, null, this.version);
-                return response;
+                return callRemoteApiAsync<AvailabilityRS, AvailabilityRQ>(request, avail, null, this.version);
+                //return response;
             }
             catch (HotelSDKException e)
             {
@@ -166,11 +176,15 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
         public CheckRateRS doCheck(CheckRateRQ checkRateRQ)
         {
+            return doCheckAsync(checkRateRQ).Result;
+        }
+
+        public Task<CheckRateRS> doCheckAsync(CheckRateRQ checkRateRQ)
+        {
             try
             {
                 HotelApiPaths.CHECK_AVAIL checkRate = new HotelApiPaths.CHECK_AVAIL();
-                CheckRateRS response = callRemoteApi<CheckRateRS, CheckRateRQ>(checkRateRQ, checkRate, null, this.version);
-                return response;
+                return callRemoteApiAsync<CheckRateRS, CheckRateRQ>(checkRateRQ, checkRate, null, this.version);                
             }
             catch (HotelSDKException e)
             {
@@ -180,13 +194,16 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
         public BookingRS confirm(BookingRQ bookingRQ)
         {
+            return this.confirmAsync(bookingRQ).Result;
+        }
+        public Task<BookingRS> confirmAsync(BookingRQ bookingRQ)
+        {
             try
             {
                 HotelApiPaths.BOOKING_CONFIRM bookingConfirm = new HotelApiPaths.BOOKING_CONFIRM();
                 HotelApiVersion version = this.version;
                 string baseUrl = (bookingRQ != null && bookingRQ.paymentData != null) ? this.baseSecurePath : this.basePath;
-                BookingRS response = callRemoteApi<BookingRS, BookingRQ>(bookingRQ, bookingConfirm, null, version, baseUrl);
-                return response;
+                return callRemoteApiAsync<BookingRS, BookingRQ>(bookingRQ, bookingConfirm, null, version, baseUrl);
             }
             catch (HotelSDKException e)
             {
@@ -196,11 +213,14 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
         public BookingCancellationRS Cancel(List<Tuple<string, string>> param)
         {
+            return this.CancelAsync(param).Result;
+        }
+        public Task<BookingCancellationRS> CancelAsync(List<Tuple<string, string>> param)
+        {
             try
             {
                 HotelApiPaths.BOOKING_CANCEL bookingCancel = new HotelApiPaths.BOOKING_CANCEL();
-                BookingCancellationRS response = callRemoteApi<BookingCancellationRS, Tuple<string, string>[]>(null, bookingCancel, param, this.version);
-                return response;
+                return callRemoteApiAsync<BookingCancellationRS, Tuple<string, string>[]>(null, bookingCancel, param, this.version);                
             }
             catch (HotelSDKException e)
             {
@@ -210,11 +230,16 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
         public BookingDetailRS Detail(List<Tuple<string, string>> param)
         {
+            return this.DetailAsync(param).Result;
+        }
+
+        public Task<BookingDetailRS> DetailAsync(List<Tuple<string, string>> param)
+        {
             try
             {
                 HotelApiPaths.BOOKING_DETAIL bookingDetail = new HotelApiPaths.BOOKING_DETAIL();
-                BookingDetailRS response = callRemoteApi<BookingDetailRS, Tuple<string, string>[]>(null, bookingDetail, param, this.version);
-                return response;
+                return callRemoteApiAsync<BookingDetailRS, Tuple<string, string>[]>(null, bookingDetail, param, this.version);
+                
             }
             catch (HotelSDKException e)
             {
@@ -224,11 +249,16 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
 
         public BookingListRS List(List<Tuple<string, string>> param)
         {
+            return this.ListAsync(param).Result;
+        }
+
+        public Task<BookingListRS> ListAsync(List<Tuple<string, string>> param)
+        {
             try
             {
                 HotelApiPaths.BOOKING_LIST bookingList = new HotelApiPaths.BOOKING_LIST();
-                BookingListRS response = callRemoteApi<BookingListRS, Tuple<string, string>[]>(null, bookingList, param, this.version);
-                return response;
+                return callRemoteApiAsync<BookingListRS, Tuple<string, string>[]>(null, bookingList, param, this.version);
+                
             }
             catch (HotelSDKException e)
             {
@@ -236,12 +266,12 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
             }
         }
 
-        private T callRemoteApi<T, U>(U request, HotelApiPaths.HotelApiPathsBase path, List<Tuple<string, string>> param, HotelApiVersion version)
+        private Task<T> callRemoteApiAsync<T, U>(U request, HotelApiPaths.HotelApiPathsBase path, List<Tuple<string, string>> param, HotelApiVersion version)
         {
-            return callRemoteApi<T, U>(request, path, param, version, this.basePath);
+            return this.callRemoteApiAsync<T, U>(request, path, param, version, this.basePath);
         }
 
-            private T callRemoteApi<T, U>(U request, HotelApiPaths.HotelApiPathsBase path, List<Tuple<string, string>> param, HotelApiVersion version, string baseUrl)
+        private async Task<T> callRemoteApiAsync<T, U>(U request, HotelApiPaths.HotelApiPathsBase path, List<Tuple<string, string>> param, HotelApiVersion version, string baseUrl)
         {
             try
             {
@@ -280,8 +310,8 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                             Uri = path.getEndPoint(param);
                         }
 
-                        HttpResponseMessage resp = client.GetAsync(Uri).Result;
-                        response = resp.Content.ReadAsAsync<T>().Result;
+                        HttpResponseMessage resp = await client.GetAsync(Uri);
+                        response = await resp.Content.ReadAsAsync<T>();
                         return response;
                     }
 
@@ -295,8 +325,8 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                             Uri = path.getEndPoint(param);
                         }
 
-                        HttpResponseMessage resp = client.DeleteAsync(Uri).Result;
-                        response = resp.Content.ReadAsAsync<T>().Result;
+                        HttpResponseMessage resp = await client.DeleteAsync(Uri);
+                        response = await resp.Content.ReadAsAsync<T>();
                         return response;
                     }
 
@@ -311,11 +341,11 @@ namespace com.hotelbeds.distribution.hotel_api_sdk
                     {
                         HttpResponseMessage resp = null;
                         if (param == null)
-                            resp = client.PostAsync(path.getEndPoint(), contentToSend).Result;
+                            resp = await client.PostAsync(path.getEndPoint(), contentToSend);
                         else
-                            resp = client.PostAsync(path.getEndPoint(param), contentToSend).Result;
+                            resp = await client.PostAsync(path.getEndPoint(param), contentToSend);
 
-                        response = resp.Content.ReadAsAsync<T>().Result;
+                        response = await resp.Content.ReadAsAsync<T>();
                     }
                 }
 
