@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Package</id>
-    <version>1.0.0</version>
+    <id>HotelBedsSDK</id>
+    <version>1.0.1</version>
     <authors>victor.hermoso</authors>
     <owners>victor.hermoso</owners>
     <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
