@@ -17,4 +17,8 @@
       <dependency id="SampleDependency" version="1.0" />
     </dependencies>
   </metadata>
+  <files>
+	<file src="hotel-api-sdk\bin\$configuration$\com.hotelbeds.distribution.hotel_api_sdk.dll" target="lib\net452\" />
+	<file src="hotel-api-sdk\bin\$configuration$\com.hotelbeds.distribution.hotel_api_model.dll" target="lib\net452\" />
+  </files>
 </package>
